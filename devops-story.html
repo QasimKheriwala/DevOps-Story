@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The DevOps War — An Epic Tale</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --dev: #e8533a;
+    --ops: #3a9fe8;
+    --gold: #f0c060;
+    --text: #d4cfc8;
+    --muted: #6b6660;
+    --terminal: #1a1f2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 50%, rgba(232,83,58,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 50%, rgba(58,159,232,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .dividing-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--muted) 30%, var(--muted) 70%, transparent);
+    opacity: 0.4;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.3s;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.6s;
+  }
+
+  .hero-title .dev-word { color: var(--dev); font-style: italic; }
+  .hero-title .ops-word { color: var(--ops); }
+
+  .hero-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.9s;
+  }
+
+  .scroll-cue {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 1.2s;
+  }
+
+  .scroll-cue span { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); }
+
+  .scroll-arrow {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── CHAPTERS ── */
+  .chapter {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .chapter.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .chapter-number {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .chapter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 2rem;
+  }
+
+  .chapter-body {
+    font-size: 0.9rem;
+    line-height: 2;
+    color: var(--text);
+  }
+
+  .chapter-body p { margin-bottom: 1.5rem; }
+
+  .highlight-dev { color: var(--dev); font-weight: 500; }
+  .highlight-ops { color: var(--ops); font-weight: 500; }
+  .highlight-gold { color: var(--gold); font-weight: 500; }
+
+  /* ── TWO KINGDOMS SPLIT ── */
+  .kingdoms {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 0;
+    max-width: 900px;
+    margin: 6rem auto;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    padding: 0 2rem;
+  }
+
+  .kingdoms.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .kingdom {
+    padding: 3rem 2.5rem;
+  }
+
+  .kingdom-divider {
+    background: linear-gradient(to bottom, transparent, var(--muted) 20%, var(--muted) 80%, transparent);
+    opacity: 0.3;
+  }
+
+  .kingdom-flag {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .kingdom-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .kingdom-tagline {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+  }
+
+  .kingdom-traits {
+    list-style: none;
+    font-size: 0.8rem;
+    line-height: 2;
+  }
+
+  .kingdom-traits li::before { content: '› '; opacity: 0.5; }
+
+  .dev-side .kingdom-name { color: var(--dev); }
+  .ops-side .kingdom-name { color: var(--ops); }
+  .ops-side { text-align: right; }
+  .ops-side .kingdom-traits li::before { content: ''; }
+  .ops-side .kingdom-traits li::after { content: ' ‹'; opacity: 0.5; }
+
+  /* ── TERMINAL BLOCK ── */
+  .terminal-wrap {
+    max-width: 760px;
+    margin: 0 auto 6rem;
+    padding: 0 2rem;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .terminal-wrap.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .terminal {
+    background: var(--terminal);
+    border: 1px solid #2a2f40;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    background: #141820;
+    border-bottom: 1px solid #2a2f40;
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #28c840; }
+
+  .terminal-title {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-left: auto;
+  }
+
+  .terminal-body {
+    padding: 1.5rem;
+    font-size: 0.8rem;
+    line-height: 1.9;
+  }
+
+  .t-comment { color: #4a5568; }
+  .t-cmd { color: var(--gold); }
+  .t-output { color: #68d391; }
+  .t-error { color: var(--dev); }
+  .t-info { color: var(--ops); }
+  .t-prompt { color: var(--muted); }
+
+  /* ── PIPELINE VISUAL ── */
+  .pipeline-wrap {
+    max-width: 900px;
+    margin: 0 auto 6rem;
+    padding: 0 2rem;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .pipeline-wrap.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .pipeline-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+
+  .pipe-stage {
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+    padding: 1.2rem 0.8rem;
+    position: relative;
+    transition: transform 0.2s ease;
+    cursor: default;
+  }
+
+  .pipe-stage:hover { transform: translateY(-4px); }
+
+  .pipe-stage::after {
+    content: '──▶';
+    position: absolute;
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 0.7rem;
+    opacity: 0.4;
+  }
+
+  .pipe-stage:last-child::after { display: none; }
+
+  .pipe-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .pipe-name {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .pipe-desc {
+    font-size: 0.6rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .stage-code { border-top: 2px solid var(--dev); }
+  .stage-build { border-top: 2px solid #e8943a; }
+  .stage-test { border-top: 2px solid var(--gold); }
+  .stage-release { border-top: 2px solid #8de83a; }
+  .stage-deploy { border-top: 2px solid var(--ops); }
+  .stage-monitor { border-top: 2px solid #9b3ae8; }
+
+  /* ── PULLQUOTE ── */
+  .pullquote {
+    max-width: 660px;
+    margin: 0 auto 6rem;
+    padding: 3rem 2rem;
+    border-left: 3px solid var(--gold);
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .pullquote.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .pullquote p {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .pullquote cite {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── EPILOGUE / FOOTER ── */
+  .epilogue {
+    text-align: center;
+    padding: 8rem 2rem;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(240,192,96,0.06) 0%, transparent 70%);
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .epilogue.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .epilogue-word {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 5rem);
+    font-weight: 900;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+
+  .epilogue p {
+    max-width: 560px;
+    margin: 0 auto 2rem;
+    font-size: 0.85rem;
+    line-height: 2;
+    color: var(--muted);
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid #2a2f40;
+    border-radius: 100px;
+    color: var(--muted);
+    transition: all 0.2s ease;
+  }
+
+  .tag:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+
+  /* ── SEPARATOR ── */
+  .sep {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+  }
+
+  .sep::before, .sep::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--muted);
+    opacity: 0.2;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="dividing-line"></div>
+  <p class="hero-eyebrow">An Epic Tale of Software Delivery</p>
+  <h1 class="hero-title">
+    <span class="dev-word">Dev</span><span style="color:var(--muted);font-weight:300"> × </span><span class="ops-word">Ops</span><br>
+    <span style="font-size:0.5em;color:var(--text);font-style:normal;font-weight:400">The War That Built the Modern Internet</span>
+  </h1>
+  <p class="hero-subtitle">Once, two kingdoms fought each other so fiercely they nearly broke every website you've ever loved. This is how they made peace — and changed everything.</p>
+  <div class="scroll-cue">
+    <span>Scroll to begin</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- CHAPTER 1 -->
+<article class="chapter" data-animate>
+  <span class="chapter-number">Chapter I · The Age of Chaos</span>
+  <h2 class="chapter-title">It Was the Worst of Times.<br><em style="color:var(--muted);font-family:'Playfair Display',serif">And Then It Got Worse.</em></h2>
+  <div class="chapter-body">
+    <p>Imagine a medieval kingdom split by a vast river. On one bank lived the <span class="highlight-dev">Developers</span> — brilliant, restless inventors who built towers overnight and dreamed in code. On the other shore: the <span class="highlight-ops">Operations</span> team — stoic guardians who kept those towers from collapsing under the weight of ten thousand visitors.</p>
+    <p>They spoke different languages. They measured success differently. And every time the Developers lobbed a new release over the wall — "Ship it!" — the Ops team caught it like a live grenade and ran for cover.</p>
+    <p>It was the 1990s. Deployments happened once a quarter. Teams spent weeks testing in isolation only to discover their code collided with live servers like a wrecking ball meeting a house of cards. Downtime was measured in <em>days</em>. Every launch was a dice roll. Every patch was a prayer.</p>
+  </div>
+</article>
+
+<!-- TWO KINGDOMS -->
+<div class="kingdoms" data-animate>
+  <div class="kingdom dev-side">
+    <div class="kingdom-flag">⚡</div>
+    <div class="kingdom-name">The Developers</div>
+    <div class="kingdom-tagline">Kingdom of Build</div>
+    <ul class="kingdom-traits">
+      <li>Move fast, ship features</li>
+      <li>Measured by new code shipped</li>
+      <li>Change = progress</li>
+      <li>Local machine = truth</li>
+      <li>Motto: "It works on my machine"</li>
+    </ul>
+  </div>
+  <div class="kingdom-divider"></div>
+  <div class="kingdom ops-side">
+    <div class="kingdom-flag">🛡️</div>
+    <div class="kingdom-name">The Operations</div>
+    <div class="kingdom-tagline">Kingdom of Run</div>
+    <ul class="kingdom-traits">
+      <li>Maintain stability above all</li>
+      <li>Measured by uptime kept</li>
+      <li>Change = risk</li>
+      <li>Production server = sacred</li>
+      <li>Motto: "Never touch a running system"</li>
+    </ul>
+  </div>
+</div>
+
+<!-- CHAPTER 2 -->
+<article class="chapter" data-animate>
+  <span class="chapter-number">Chapter II · The Incident</span>
+  <h2 class="chapter-title">The Night Everything<br><em style="color:var(--dev);font-family:'Playfair Display',serif">Caught Fire</em></h2>
+  <div class="chapter-body">
+    <p>It's 11:47 PM. A developer pushes a "small fix" — three lines of code — straight to production. The site goes down. The on-call Ops engineer wakes to an avalanche of alerts. Two million users stare at a white error screen. Revenue is hemorrhaging by the second.</p>
+    <p>By morning, the postmortem is a civil war. The Developers blame the brittle server configuration. The Ops team blames cowboy deployments. Both are right. Both are furious. And this exact scene is playing out at companies all over the world, every single night.</p>
+    <p>Something had to break before something could be built. And in 2008, at a small conference in Belgium, a frustrated systems administrator named <span class="highlight-gold">Patrick Debois</span> sat in a talk about how Flickr deployed code ten times a day — and felt the hairs stand up on the back of his neck.</p>
+  </div>
+</article>
+
+<!-- TERMINAL: The Incident -->
+<div class="terminal-wrap" data-animate>
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+      <span class="terminal-title">prod-server-01 · incident log · 23:47 UTC</span>
+    </div>
+    <div class="terminal-body">
+      <div class="t-comment"># What a typical pre-DevOps deployment looked like...</div>
+      <br>
+      <div><span class="t-prompt">dev@laptop $ </span><span class="t-cmd">git push origin main</span></div>
+      <div class="t-output">Counting objects: 3. Writing objects: 100%. Done.</div>
+      <br>
+      <div><span class="t-prompt">ops@prod-01 $ </span><span class="t-cmd">git pull && restart services</span></div>
+      <div class="t-error">ERROR: dependency conflict — expected libssl 1.0, found 1.1</div>
+      <div class="t-error">FATAL: application failed to start</div>
+      <div class="t-error">CRITICAL: 2,341,008 users now seeing 500 errors</div>
+      <br>
+      <div class="t-comment"># 2:13 AM. Ops is awake. Dev is asleep. Everyone is blaming someone.</div>
+      <br>
+      <div><span class="t-prompt">ops@prod-01 $ </span><span class="t-cmd">git revert HEAD && restart</span></div>
+      <div class="t-output">Reverted. Services restored. Downtime: 2h 26m.</div>
+      <br>
+      <div class="t-info">→ Root cause? No shared environment. No communication. No pipeline.</div>
+      <div class="t-info">→ Solution? That's what DevOps is for.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAPTER 3 -->
+<article class="chapter" data-animate>
+  <span class="chapter-number">Chapter III · The Armistice</span>
+  <h2 class="chapter-title">The Day a Word<br><em style="color:var(--gold);font-family:'Playfair Display',serif">Changed Everything</em></h2>
+  <div class="chapter-body">
+    <p>In October 2009, Patrick Debois organized a small gathering in Ghent, Belgium. He called it <span class="highlight-gold">DevOpsDays</span>. He coined the word almost accidentally — he needed a Twitter hashtag short enough to fit the character limit. So he dropped "days" and kept <strong style="color:var(--gold)">DevOps</strong>.</p>
+    <p>The idea was simple but radical: <em>what if the people who build software and the people who run software were the same people?</em> Or at the very least — what if they worked together, shared tools, shared metrics, and shared responsibility?</p>
+    <p>It was less a technology and more a philosophy. A culture shift wrapped in automation. The old wall between Dev and Ops wouldn't be knocked down — it would be dissolved by a river of pipelines, automation, and mutual accountability.</p>
+  </div>
+</article>
+
+<!-- PULLQUOTE -->
+<blockquote class="pullquote" data-animate>
+  <p>"DevOps is not a goal, but a never-ending process of continual improvement."</p>
+  <cite>— Jez Humble, co-author of Continuous Delivery</cite>
+</blockquote>
+
+<!-- CHAPTER 4 -->
+<article class="chapter" data-animate>
+  <span class="chapter-number">Chapter IV · The Machines Rise</span>
+  <h2 class="chapter-title">When Humans Stopped<br><em style="color:var(--ops);font-family:'Playfair Display',serif">Doing It By Hand</em></h2>
+  <div class="chapter-body">
+    <p>The revolution came with a pipeline. A beautiful, ruthless, automated assembly line that took a developer's code commit and did everything — built it, tested it, scanned it for security holes, packaged it, and deployed it to production — without a single human hand touching a keyboard.</p>
+    <p>Suddenly, teams could ship code <span class="highlight-gold">dozens of times a day</span>. Amazon famously reached 23,000 deployments per day. Netflix built Chaos Monkey — a bot that randomly killed its own servers in production to make sure the system was resilient enough to survive anything. You don't do that unless you trust your pipeline completely.</p>
+    <p>Infrastructure became code. Servers stopped being sacred physical machines with pet names and became disposable cattle — spun up in seconds, destroyed just as fast. <span class="highlight-dev">Docker</span> put applications in containers. <span class="highlight-ops">Kubernetes</span> orchestrated fleets of them. The wall was gone. The pipeline was the bridge.</p>
+  </div>
+</article>
+
+<!-- THE PIPELINE -->
+<div class="pipeline-wrap" data-animate>
+  <p class="pipeline-label">The DevOps Infinity Pipeline</p>
+  <div class="pipeline">
+    <div class="pipe-stage stage-code">
+      <span class="pipe-icon">✍️</span>
+      <div class="pipe-name">Code</div>
+      <div class="pipe-desc">Developer writes & commits feature</div>
+    </div>
+    <div class="pipe-stage stage-build">
+      <span class="pipe-icon">🔨</span>
+      <div class="pipe-name">Build</div>
+      <div class="pipe-desc">Automated compile & package</div>
+    </div>
+    <div class="pipe-stage stage-test">
+      <span class="pipe-icon">🧪</span>
+      <div class="pipe-name">Test</div>
+      <div class="pipe-desc">Thousands of tests run in seconds</div>
+    </div>
+    <div class="pipe-stage stage-release">
+      <span class="pipe-icon">📦</span>
+      <div class="pipe-name">Release</div>
+      <div class="pipe-desc">Artifact versioned & signed</div>
+    </div>
+    <div class="pipe-stage stage-deploy">
+      <span class="pipe-icon">🚀</span>
+      <div class="pipe-name">Deploy</div>
+      <div class="pipe-desc">Live to production — no humans</div>
+    </div>
+    <div class="pipe-stage stage-monitor">
+      <span class="pipe-icon">👁️</span>
+      <div class="pipe-name">Monitor</div>
+      <div class="pipe-desc">Metrics feed back to developers</div>
+    </div>
+  </div>
+</div>
+
+<div class="sep">∞ then it loops back to the beginning</div>
+<br><br>
+
+<!-- CHAPTER 5 -->
+<article class="chapter" data-animate>
+  <span class="chapter-number">Chapter V · The World It Built</span>
+  <h2 class="chapter-title">Every Time You Hit<br><em style="color:var(--gold);font-family:'Playfair Display',serif">Refresh</em></h2>
+  <div class="chapter-body">
+    <p>You use DevOps every single day without knowing it. When Spotify adds a new feature to your app without you downloading an update, that's a DevOps pipeline. When a banking app fixes a bug at 3 AM without taking the site down, that's DevOps. When your food delivery app shows your driver's location updating every five seconds — thousands of servers quietly cooperating in the background — that's the world DevOps built.</p>
+    <p>The companies that embraced it fastest won their industries. Those that didn't became cautionary tales. It turns out the fastest way to kill a software business isn't bad code — it's the gap between building something and getting it into users' hands.</p>
+    <p>DevOps closed that gap. It turned months into minutes. It turned blame into shared ownership. It turned the wall between two warring kingdoms into a <span class="highlight-gold">bridge they both helped build</span>.</p>
+  </div>
+</article>
+
+<!-- EPILOGUE -->
+<section class="epilogue" data-animate>
+  <div class="epilogue-word">Peace.</div>
+  <p>The kingdoms of Dev and Ops didn't merge — they evolved. Today their heirs go by new names: <strong>Platform Engineering</strong>, <strong>SRE</strong>, <strong>MLOps</strong>, <strong>GitOps</strong>. The tools get more powerful every year. But the original insight — that the people who build things and the people who run things must work as one — hasn't changed.</p>
+  <p>And somewhere right now, a three-line code commit is flowing through a pipeline, being tested, packaged, and deployed — automatically, reliably, invisibly — while its author has already moved on to the next idea.</p>
+  <p style="color:var(--gold);font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;">That's the magic of DevOps.</p>
+  <br><br>
+  <div class="tag-cloud">
+    <span class="tag">CI/CD</span>
+    <span class="tag">Continuous Delivery</span>
+    <span class="tag">Infrastructure as Code</span>
+    <span class="tag">Docker</span>
+    <span class="tag">Kubernetes</span>
+    <span class="tag">Observability</span>
+    <span class="tag">Shift Left</span>
+    <span class="tag">GitOps</span>
+    <span class="tag">SRE</span>
+    <span class="tag">Chaos Engineering</span>
+    <span class="tag">Blue-Green Deployments</span>
+    <span class="tag">Feature Flags</span>
+    <span class="tag">Canary Releases</span>
+    <span class="tag">DORA Metrics</span>
+  </div>
+</section>
+
+<script>
+  // Intersection Observer for scroll reveals
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
